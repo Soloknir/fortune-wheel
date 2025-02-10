@@ -1,5 +1,6 @@
 import { PrizesIds } from "../enums";
 import Header from "../prefabs/Header";
+import ResultGameObject from "../prefabs/ResultGameObject";
 import Button from "../prefabs/UIButton";
 import WheelGameObject from "../prefabs/WheelGameObject";
 import { IPrize } from "../types";
@@ -16,6 +17,7 @@ export default class WheelScene extends Phaser.Scene {
   prizes: (IPrize | null)[] = [];
   header?: Header;
   button?: Button;
+  resultOverlay?: ResultGameObject;
 
   constructor() {
     super({ key: 'wheel' });
@@ -31,7 +33,9 @@ export default class WheelScene extends Phaser.Scene {
     this.load.svg('sector', '/assets/sector.svg');
     this.load.svg('pointer', '/assets/pointer.svg');
     this.load.svg('plate', './assets/plate.svg');
+    this.load.svg('result-header', './assets/result-header.svg');
     this.load.image('fortune', './assets/fortune.png');
+    this.load.image('result-bg', './assets/result-bg.png')
 
     this.load.image(PrizesIds.COIN, `/assets/${PrizesIds.COIN}.png`);
     this.load.image(PrizesIds.EXP, `/assets/${PrizesIds.EXP}.png`);
@@ -65,7 +69,9 @@ export default class WheelScene extends Phaser.Scene {
 
     this.add.image(screenCenterX, screenCenterY, 'pointer');
 
-    this.button = new Button(this, { position: { x: screenCenterX, y: screenCenterY + 400 }, text: 'Крутить колесо', callback: this.spinTheWheel.bind(this) })
+    this.button = new Button(this, { position: { x: screenCenterX, y: screenCenterY + 400 }, text: 'Крутить колесо', callback: this.spinTheWheel.bind(this) });
+
+    this.resultOverlay = new ResultGameObject(this, { prize: null }).setVisible(false);
   }
 
   spinTheWheel() : void {
@@ -73,7 +79,7 @@ export default class WheelScene extends Phaser.Scene {
       throw new Error('Wheel face is not initialized!')
     }
 
-    this.hideUI();
+    this.toggleUI(false);
 
     this.wheelFace.setAngle(0);
     const angle = (360 * (Math.random())) * (Math.random() * 5 + 5);
@@ -101,7 +107,7 @@ export default class WheelScene extends Phaser.Scene {
         ease: 'Cubic.easeOut'
       }).on('complete', () => {
         this.showResult(this.prizes[Math.abs(newAngle / 45)]);
-        this.showUI();
+        this.toggleUI(true);
       });
     });
   }
@@ -110,17 +116,14 @@ export default class WheelScene extends Phaser.Scene {
     this.header?.update(`${this.state.attempts}`)
   }
 
-  hideUI() {
-    this.button && this.button.setVisible(false);
-    this.header && this.header.setVisible(false);
+  toggleUI(value: boolean) {
+    this.button && this.button.setVisible(value);
+    this.header && this.header.setVisible(value);
   }
 
-  showUI() {
-    this.button && this.button.setVisible(true);
-    this.header && this.header.setVisible(true);
-  }
+
 
   showResult(result: IPrize | null) {
-    console.log(result)
+    
   }
 }
