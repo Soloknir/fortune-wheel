@@ -1,0 +1,1 @@
+export { default as SectorGameObject } from './SectorGameObject';

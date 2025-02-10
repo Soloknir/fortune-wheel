@@ -24,7 +24,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'TreeRender',
+            title: 'Фортуна',
             template: path.resolve(__dirname, './src/template.html'),
             filename: 'index.html',
         }),
